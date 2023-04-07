@@ -4,12 +4,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>GitHub Explorer Example</title>
+    <title>Git Explorer</title>
 
     <link rel="stylesheet" href="css/codemirror.css">
     <link rel="stylesheet" href="css/highlight.css">
     <link rel="stylesheet" href="css/uikit.min.css">
     <link rel="stylesheet" href="css/uikit.almost-flat.min.css">
+    <link rel="stylesheet" href="css/git-explorer.css">
 
     <script src="js/jquery.min.js"></script>
     <script src="js/codemirror.js"></script>
@@ -27,94 +28,6 @@
             });
         })
     </script>
-
-    <style>
-        div.git-explorer {
-            width: 100%;
-            margin-top: 15px;
-            margin-bottom: 15px;
-        }
-
-        div.git-explorer a {
-            text-decoration: none;
-        }
-
-        div.git-explorer div.git-explorer-header {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 5px 10px;
-            border: 1px solid #2D7091;
-            border-bottom: none;
-            background-color: #ebf7fd;
-            border-radius: 4px 4px 0 0;
-            overflow-x: hidden;
-            text-overflow: ellipsis;
-        }
-
-        div.git-explorer>div.git-explorer-frame {
-            display: flex;
-            align-items: stretch;
-        }
-
-        div.git-explorer>div.git-explorer-frame>div.git-explorer-frame-tree {
-            flex: none;
-            width: 200px;
-            border: 1px solid #2D7091;
-        }
-
-        div.git-explorer>div.git-explorer-frame>div.git-explorer-frame-tree>div.git-explorer-tree {
-            width: 100%;
-            height: 400px;
-            padding: 4px;
-            overflow: scroll;
-            box-sizing: border-box;
-        }
-
-        div.git-explorer>div.git-explorer-frame>div.git-explorer-frame-tree>div.git-explorer-tree div.git-explorer-tree-item {
-            margin: 4px 4px 4px 1em;
-            white-space: nowrap;
-        }
-
-        div.git-explorer>div.git-explorer-frame>div.git-explorer-frame-tree>div.git-explorer-tree>div.git-explorer-tree-item {
-            margin-left: 4px;
-        }
-
-        div.git-explorer-tree-item>a {
-            padding: 2px;
-            border: 1px solid transparent;
-        }
-
-        div.git-explorer-tree-item a.git-explorer-tree-item-selected {
-            background-color: #ebf7fd;
-            border: 1px solid #2D7091;
-            border-radius: 2px;
-        }
-
-        div.git-explorer>div.git-explorer-frame>div.git-explorer-frame-resize {
-            flex: none;
-            width: 4px;
-            border-bottom: 1px solid #2D7091;
-            background-color: #ebf7fd;
-            /* cursor: ew-resize; */
-        }
-
-        div.git-explorer>div.git-explorer-frame>div.git-explorer-frame-code {
-            flex: 1;
-            border: 1px solid #2D7091;
-        }
-
-        div.git-explorer>div.git-explorer-frame>div.git-explorer-frame-code>pre {
-            width: 100%;
-            height: 400px;
-            display: block;
-            margin: 0;
-            box-sizing: border-box;
-            border: none;
-            white-space: pre-wrap;
-            overflow: scroll;
-            tab-size: 4;
-        }
-    </style>
 </head>
 
 <body>
@@ -133,173 +46,32 @@
                     <div class="uk-flex">
                         <div class="uk-flex-item-1" style="padding-right:15px; border-right:1px solid #ccc;">
                             <div id="x-content">
-                                <h3>Java Networking</h3>
-                                <p>The Java networking API provides classes for networking functionality, including
-                                    addressing, classes for using URLs and URIs, socket classes for connecting to
-                                    servers, networking security functionality, and more. It consists of these packages
-                                    and modules:
+                                <h3>Git Explorer</h3>
+                                <p>Git Explorer turns any GitHub-compabible link to embedded explorer in web page:
                                 </p>
                                 <p>
                                     <a class="git-explorer"
-                                        href="https://github.com/michaelliao/summer-framework/tree/master/framework/summer-context">https://github.com/michaelliao/summer-framework/tree/master/framework/summer-context</a>
+                                        href="https://github.com/michaelliao/git-explorer/tree/master/sample">https://github.com/michaelliao/git-explorer/tree/master/sample</a>
                                 </p>
+                                <p>GitHub-compabible link:</p>
                                 <p>
                                     <a class="git-explorer"
-                                        href="https://gitee.com/liaoxuefeng/itranswarp/tree/master/dev">https://gitee.com/liaoxuefeng/itranswarp/tree/master/dev</a>
+                                        href="https://gitee.com/liaoxuefeng/summer-framework/tree/master/framework/summer-web">https://gitee.com/liaoxuefeng/summer-framework/tree/master/framework/summer-web</a>
                                 </p>
+                                <p>The invalid link keeps unchanged:</p>
                                 <p>
-                                    <a xclass="git-explorer"
-                                        href="https://github.com/michaelliao/summer-framework/tree/master/framework/summer-x">https://github.com/michaelliao/summer-framework/tree/master/framework/summer-x</a>
+                                    <a class="git-explorer"
+                                        href="https://github.com/michaelliao/repo-not-exist/tree/master">https://github.com/michaelliao/repo-not-exist/tree/master</a>
                                 </p>
+                                <p>TODO:</p>
                                 <p>
-                                    <a xclass="git-explorer"
-                                        href="https://github.com/michaelliao/summer-framework/trees">https://github.com/michaelliao/summer-framework/trees</a>
+                                    <li>Fix CSS issues for &lt;pre&gt;</li>
+                                    <li>Make the explorer tree view resizable.</li>
+                                    <li>Add highlight for displaying code.</li>
+                                    <li>Add preview for images.</li>
+                                    <li>Add download link for each file.</li>
+                                    <li>Add zip download.</li>
                                 </p>
-                                <p>
-                                    <li>java.net: Classes for implementing networking applications.</li>
-                                    <li>java.net.http: Contains the API for the HTTP Client, which provides high-level
-                                        client interfaces to HTTP (versions 1.1 and 2) and low-level client interfaces
-                                        to WebSocket instances. See Java HTTP Client for more information about this
-                                        API, including videos and sample code.</li>
-                                </p>
-                                <div id="generated-A348X" class="git-explorer">
-                                    <div class="git-explorer-header">
-                                        <a href="https://github.com" target="_blank">GitHub</a>
-                                        ▸
-                                        <a href="https://github.com/michaelliao" target="_blank">michaelliao</a>
-                                        ▸
-                                        <a href="https://github.com/michaelliao/summer-framework"
-                                            target="_blank">summer-framework</a>
-                                        ▸
-                                        <a
-                                            href="https://github.com/michaelliao/summer-framework/tree/master/framework/summer-context/src">
-                                            /framework/summer-context/src
-                                        </a>
-                                    </div>
-                                    <div class="git-explorer-frame">
-                                        <div class="git-explorer-frame-tree">
-                                            <div class="git-explorer-tree">
-                                                <!-- tree items -->
-                                                <div id="x1" class="git-explorer-tree-item">
-                                                    <a href="#1">▸ AAA</a>
-                                                    <div class="git-explorer-tree-item">
-                                                        <a href="#1">▸ BBB</a>
-                                                        <div class="git-explorer-tree-item">
-                                                            <a href="#1">▸</a> CC
-                                                        </div>
-                                                        <div class="git-explorer-tree-item">
-                                                            <a href="#">▾</a> CC 2
-                                                            <div class="git-explorer-tree-item">
-                                                                <a href="#">▸ kkkkkkkkkkkkkkkkmmmmmmmmmmmmmmmmmx</a>
-                                                            </div>
-                                                            <div class="git-explorer-tree-item">
-                                                                <a href="#">▸ kkkkkkkkkkkkkkkkmmmmmmmmmmmmmmmmmx</a>
-                                                            </div>
-                                                        </div>
-                                                        <div class="git-explorer-tree-item">
-                                                            <a href="#1">▸</a> CC 3
-                                                            <div class="git-explorer-tree-item">
-                                                                <a href="#1">▸</a> CC 3
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="git-explorer-tree-item">
-                                                    <a style="visibility:hidden">▸</a> <a href="#2"
-                                                        class="git-explorer-tree-item-selected">README</a>
-                                                </div>
-                                                <div class="git-explorer-tree-item">
-                                                    <a href="#1" style="visibility:hidden">▸</a> <a
-                                                        href="#2">pom.xml</a>
-                                                </div>
-                                                <div class="git-explorer-tree-item">
-                                                    <a href="#1" style="visibility:hidden">▸</a> <a
-                                                        href="#2">.gitignore</a>
-                                                </div>
-                                                <div class="git-explorer-tree-item">
-                                                    <a href="#1" style="visibility:hidden">▸</a> <a href="#2">.mvnw</a>
-                                                </div>
-                                                <div class="git-explorer-tree-item">
-                                                    <a href="#1">▸</a> AAA
-                                                </div>
-                                                <div class="git-explorer-tree-item">
-                                                    <a href="#1">▸</a> AAA
-                                                </div>
-                                                <div class="git-explorer-tree-item">
-                                                    <a href="#1">▸</a> AAA
-                                                </div>
-                                                <div class="git-explorer-tree-item">
-                                                    <a href="#1">▸</a> AAA
-                                                </div>
-                                                <div class="git-explorer-tree-item">
-                                                    <a href="#1">▸</a> AAA
-                                                </div>
-                                                <div class="git-explorer-tree-item">
-                                                    <a href="#1">▸</a> AAA
-                                                </div>
-                                                <div class="git-explorer-tree-item">
-                                                    <a href="#1">▸</a> XX
-                                                </div>
-                                                <!-- // tree items -->
-                                            </div>
-                                        </div>
-                                        <div class="git-explorer-frame-resize">
-                                        </div>
-                                        <div class="git-explorer-frame-code">
-                                            <pre><code>// LICENCED GPLv3
-package com.itranswarp.model;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
-
-import com.itranswarp.enums.Role;
-
-@Entity
-@Table(name = "users", uniqueConstraints = @UniqueConstraint(name = "UNI_EMAIL", columnNames = { "email" }))
-public class User extends AbstractEntity {
-
-    @Column(nullable = false, length = VAR_ENUM)
-    public Role role;
-
-    @Column(nullable = false, updatable = false, length = VAR_CHAR_EMAIL)
-    public String email;
-
-    @Column(nullable = false, length = VAR_CHAR_NAME)
-    public String name;
-
-    @Column(nullable = false, length = VAR_CHAR_URL)
-    public String imageUrl;
-
-    @Column(nullable = false)
-    public long lockedUntil;
-
-    @Override
-    public String toString() {
-        return String.format("{User: id=%s, role=%s, email=%s, name=%s, locakedUntil=%s}", this.id, this.role, this.email, this.name, this.lockedUntil);
-    }
-}
-                                                </code></pre>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h3>Networking System Properties</h3>
-                                <p>You can set the following networking system properties in one of three ways:</p>
-                                <p>
-                                    <li>Using the -D option of the java command</li>
-                                    <li>Using the System.setProperty(String, String) method</li>
-                                    <li>Specifying them in the $JAVA_HOME/conf/net.properties file. Note that you can
-                                    </li>
-                                    <li>specify only proxy-related properties in this file.</li>
-                                </p>
-                                <p>Unless specified otherwise, a property value is checked every time it's used.</p>
-                                <p>See Networking Properties and the java.net.http module in the Java SE API
-                                    Specification for more information.</p>
-                                <h3>HTTP Client Properties</h3>
-                                <p>Some of the following properties are subject to predefined minimum and maximum values
-                                    that override any user-specified values. Note that the default value of boolean
-                                    values is true if the property exists but has no value.</p>
                             </div>
                         </div>
                         <div class="uk-flex-item-none"
