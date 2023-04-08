@@ -77,10 +77,14 @@
         return 'gitExplorer_' + gitExplorerDomId;
     }
 
-    async function fetchJson(url, owner, repo, branch, sha, path) {
+    async function fetchJson(url, owner, repo, branch, sha, path, forceCache) {
         let actualUrl = url.replace('${owner}', owner).replace('${repo}', repo).replace('${branch}', branch).replace('${sha}', sha).replace('${path}', path);
         console.log(`fetch: ${actualUrl}`);
-        let resp = await fetch(actualUrl, { cache: "force-cache" });
+        let param = {};
+        if (forceCache) {
+            param.cache = 'force-cache';
+        }
+        let resp = await fetch(actualUrl, param);
         let json = await resp.json();
         return json;
     }
@@ -112,12 +116,12 @@
         codeDom.setAttribute('data', aId);
         aDom.className = 'git-explorer-tree-item-selected';
         if (size > MAX_SIZE) {
-            codeDom.innerHTML = `<i>Cannot display large file</i> <a target="_blank" href="${download}">Download</a>`
+            codeDom.innerHTML = `<i>Cannot display large file.</i> <a target="_blank" href="${download}">Download</a>`
             return;
         }
         codeDom.innerHTML = '<i>Loading...</i>';
         // start load blob:
-        fetchJson(url, '', '', '', '', '').then((obj) => {
+        fetchJson(url, '', '', '', '', '', true).then((obj) => {
             // check if url changed:
             let exp = document.querySelector('#' + codeId);
             if (exp.getAttribute('data') === aId) {
@@ -267,14 +271,10 @@
         if (item.type === 'blob') {
             let aId = nextDomId();
             let apiUrl = blobApiUrl.replace('${sha}', item.sha);
-            let path = item.path;
-            if (!path.startsWith('/')) {
-                path = '/' + path;
-            }
-            let download = downloadUrl.replace('${path}', path);
+            let download = downloadUrl.replace('${path}', item.path);
             return `
 <div class="git-explorer-tree-item" ${style}>
-    <a id="${aId}" size="${item.size}" path="${path}" download="${download}" href="javascript:void(0)" onclick="__loadGitBlob('${domId}', '${aId}', '${apiUrl}')">▤ <span>${item.name}</span></a>
+    <a id="${aId}" size="${item.size}" path="${item.path}" download="${download}" href="javascript:void(0)" onclick="__loadGitBlob('${domId}', '${aId}', '${apiUrl}')">▤ <span>${item.name}</span></a>
 </div>
 `;
         } else if (item.type === 'tree') {
@@ -319,7 +319,7 @@
             domId = nextDomId(),
             codeId = nextDomId(),
             blobApiUrl = config.blobApi.replace('${owner}', owner).replace('${repo}', repo).replace('${branch}', branch),
-            downloadUrl = config.downloadUrl.replace('${owner}', owner).replace('${repo}', repo).replace('${branch}', branch);
+            downloadUrl = config.downloadUrl.replace('${owner}', owner).replace('${repo}', repo).replace('${branch}', branch).replace('${path}', path + '/${path}');
         let treeItems = createTreeItems(blobApiUrl, downloadUrl, codeId, items);
         let
             domHtml = `
