@@ -130,7 +130,7 @@
                 console.warn(`ignore result because selection changed: ${url}`);
             }
         }).catch((err) => {
-            console.error('load content failed.', e);
+            console.error('load content failed.', err);
         });
     };
 
