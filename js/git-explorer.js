@@ -125,11 +125,17 @@
             // check if url changed:
             let exp = document.querySelector('#' + codeId);
             if (exp.getAttribute('data') === aId) {
-                codeDom.innerText = b64DecodeUnicode(obj.content);
+                try {
+                    codeDom.innerText = b64DecodeUnicode(obj.content);
+                } catch (err) {
+                    // binary content:
+                    codeDom.innerHTML = `<i>Cannot display binary file.</i> <a target="_blank" href="${download}">Download</a>`
+                }
             } else {
                 console.warn(`ignore result because selection changed: ${url}`);
             }
         }).catch((err) => {
+            console.log(JSON.stringify(err))
             console.error('load content failed.', err);
         });
     };
