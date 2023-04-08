@@ -1,12 +1,13 @@
 (function () {
-    let CONFIG = {
+    const CONFIG = {
         github: {
             name: 'GitHub',
             link: 'https://github.com',
             pattern: 'https://github.com/${owner}/${repo}/tree/${branch}${path}',
             treeApi: 'https://api.github.com/repos/${owner}/${repo}/git/trees/${sha}?recursive=1',
             contentApi: 'https://api.github.com/repos/${owner}/${repo}/contents${path}?ref=${branch}',
-            blobApi: 'https://api.github.com/repos/${owner}/${repo}/git/blobs/${sha}'
+            blobApi: 'https://api.github.com/repos/${owner}/${repo}/git/blobs/${sha}',
+            downloadUrl: 'https://github.com/${owner}/${repo}/raw/${branch}${path}'
         },
         gitee: {
             name: 'Gitee',
@@ -14,9 +15,35 @@
             pattern: 'https://gitee.com/${owner}/${repo}/tree/${branch}${path}',
             treeApi: 'https://gitee.com/api/v5/repos/${owner}/${repo}/git/trees/${sha}?recursive=1',
             contentApi: 'https://gitee.com/api/v5/repos/${owner}/${repo}/contents${path}?ref=${branch}',
-            blobApi: 'https://gitee.com/api/v5/repos/${owner}/${repo}/git/blobs/${sha}'
+            blobApi: 'https://gitee.com/api/v5/repos/${owner}/${repo}/git/blobs/${sha}',
+            downloadUrl: 'https://gitee.com/${owner}/${repo}/raw/${branch}${path}'
         }
     };
+
+    const MAX_SIZE = 1048576; // 1MB
+
+    const TEXT_FILES = [
+        'asm', 'asp', 'aspx',
+        'bat',
+        'c', 'cc', 'cpp', 'clj', 'cs', 'csv',
+        'dart',
+        'el', 'erl', 'ex',
+        'f', 'fs',
+        'gitignore', 'go',
+        'h', 'hh', 'htm', 'html',
+        'ini',
+        'java', 'js', 'jsx', 'json', 'jsp',
+        'kt',
+        'lisp',
+        'm', 'm3u', 'm3u8', 'md', 'md5', 'mm',
+        'p', 'pas', 'php', 'pl', 'pom', 'properties', 'py',
+        'r', 'rb', 'rkt', 'rs', 'rss',
+        's', 'sass', 'scala', 'scss', 'sh', 'sha1', 'shtm', 'shtml', 'sig', 'sm', 'sql', 'svg', 'swift',
+        'toml', 'txt', 'ts',
+        'v', 'vb', 'vbs',
+        'xhtml', 'xml', 'xsd',
+        'yml', 'yaml'];
+    let IMAGE_FILES = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
     // file name -> highlight js language name:
     let FILENAMES = {
@@ -43,11 +70,11 @@
         'Makefile': 'Makefile'
     }
 
-    window.__gitExplorerDomId = 0;
+    let gitExplorerDomId = 0;
 
     function nextDomId() {
-        window.__gitExplorerDomId++;
-        return 'gitExplorer_' + window.__gitExplorerDomId;
+        gitExplorerDomId++;
+        return 'gitExplorer_' + gitExplorerDomId;
     }
 
     async function fetchJson(url, owner, repo, branch, sha, path) {
@@ -70,6 +97,8 @@
             aDom = document.querySelector('#' + aId),
             codeDom = document.querySelector('#' + codeId),
             current = codeDom.getAttribute('data'),
+            size = parseFloat(aDom.getAttribute('size')),
+            download = aDom.getAttribute('download'),
             filename = aDom.lastElementChild.innerText;
         console.log(`load blob ${filename}: ${url}`);
         if (current === aId) {
@@ -82,6 +111,10 @@
         }
         codeDom.setAttribute('data', aId);
         aDom.className = 'git-explorer-tree-item-selected';
+        if (size > MAX_SIZE) {
+            codeDom.innerHTML = `<i>Cannot display large file</i> <a target="_blank" href="${download}">Download</a>`
+            return;
+        }
         codeDom.innerHTML = '<i>Loading...</i>';
         // start load blob:
         fetchJson(url, '', '', '', '', '').then((obj) => {
@@ -93,7 +126,7 @@
                 console.warn(`ignore result because selection changed: ${url}`);
             }
         }).catch((err) => {
-
+            console.error('load content failed.', e);
         });
     };
 
@@ -229,21 +262,26 @@
         }
     }
 
-    function createTreeItem(blobApiUrl, domId, item, depth) {
+    function createTreeItem(blobApiUrl, downloadUrl, domId, item, depth) {
         let style = depth > 0 ? 'style="display:none"' : '';
         if (item.type === 'blob') {
             let aId = nextDomId();
-            let url = blobApiUrl.replace('${sha}', item.sha);
+            let apiUrl = blobApiUrl.replace('${sha}', item.sha);
+            let path = item.path;
+            if (!path.startsWith('/')) {
+                path = '/' + path;
+            }
+            let download = downloadUrl.replace('${path}', path);
             return `
 <div class="git-explorer-tree-item" ${style}>
-    <a id="${aId}" href="javascript:void(0)" onclick="__loadGitBlob('${domId}', '${aId}', '${url}')">▤ <span>${item.name}</span></a>
+    <a id="${aId}" size="${item.size}" path="${path}" download="${download}" href="javascript:void(0)" onclick="__loadGitBlob('${domId}', '${aId}', '${apiUrl}')">▤ <span>${item.name}</span></a>
 </div>
 `;
         } else if (item.type === 'tree') {
             let cs = [];
             if (item.children) {
                 for (let cItem of item.children) {
-                    cs.push(createTreeItem(blobApiUrl, domId, cItem, depth + 1));
+                    cs.push(createTreeItem(blobApiUrl, downloadUrl, domId, cItem, depth + 1));
                 }
             }
             if (cs.length === 0) {
@@ -261,10 +299,10 @@
         }
     }
 
-    function createTreeItems(blobApiUrl, domId, items) {
+    function createTreeItems(blobApiUrl, downloadUrl, domId, items) {
         let cs = [];
         for (let item of items) {
-            cs.push(createTreeItem(blobApiUrl, domId, item, 0));
+            cs.push(createTreeItem(blobApiUrl, downloadUrl, domId, item, 0));
         }
         return cs.join('\n');
     }
@@ -280,8 +318,9 @@
             items = data.items,
             domId = nextDomId(),
             codeId = nextDomId(),
-            blobApiUrl = config.blobApi.replace('${owner}', owner).replace('${repo}', repo).replace('${branch}', branch);
-        let treeItems = createTreeItems(blobApiUrl, codeId, items);
+            blobApiUrl = config.blobApi.replace('${owner}', owner).replace('${repo}', repo).replace('${branch}', branch),
+            downloadUrl = config.downloadUrl.replace('${owner}', owner).replace('${repo}', repo).replace('${branch}', branch);
+        let treeItems = createTreeItems(blobApiUrl, downloadUrl, codeId, items);
         let
             domHtml = `
 <div id="${domId}" class="git-explorer">
@@ -303,7 +342,7 @@
         <div class="git-explorer-frame-resize">
         </div>
         <div class="git-explorer-frame-code">
-            <pre><code id="${codeId}"></code></pre>
+            <pre><code id="${codeId}" owner="${owner}" repo="${repo}" branch="${branch}"></code></pre>
         </div>
     </div>
 </div>
