@@ -32,9 +32,13 @@ See live demo on [https://gitexplorer.itranswarp.com](https://gitexplorer.itrans
 </html>
 ```
 
+### How to change style
+
+Override [git-explorer.css](https://github.com/michaelliao/git-explorer/blob/master/css/git-explorer.css) in your own CSS.
+
 # Notes
 
-The URL must contain branch info so the following URL not works:
+The URL must contain branch info so the following URL is not work:
 
 ```
 https://github.com/michaelliao/git-explorer
