@@ -10,15 +10,15 @@ can be converted to:
 
 ![gitexplorer.png](gitexplorer.png)
 
-See live demo on [https://gitexplorer.itranswarp.com](https://gitexplorer.itranswarp.com).
+See live demo on [https://michaelliao.github.io/git-explorer/](https://michaelliao.github.io/git-explorer/).
 
 # Usage
 
 ```
 <html>
 <head>
-    <link rel="stylesheet" href="https://gitexplorer.itranswarp.com/css/git-explorer.css">
-    <script src="https://gitexplorer.itranswarp.com/js/git-explorer.js"></script>
+    <link rel="stylesheet" href="https://michaelliao.github.io/git-explorer/css/git-explorer.css">
+    <script src="https://michaelliao.github.io/git-explorer/js/git-explorer.js"></script>
 </head>
 <body>
     <div id="placeholder"></div>
