@@ -20,7 +20,7 @@
         }
     };
 
-    const MAX_SIZE = 1048576; // 1MB
+    const MAX_SIZE = 2097152; // 2MB
 
     const TEXT_FILES = [
         'asm', 'asp', 'aspx',
@@ -43,7 +43,7 @@
         'v', 'vb', 'vbs',
         'xhtml', 'xml', 'xsd',
         'yml', 'yaml'];
-    let IMAGE_FILES = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
+    let IMAGE_FILES = ['png', 'jpg', 'jpeg', 'jpe', 'gif', 'webp', 'svg'];
 
     // file name -> highlight js language name:
     let FILENAMES = {
@@ -76,6 +76,7 @@
         gitExplorerDomId++;
         return 'gitExplorer_' + gitExplorerDomId;
     }
+
     function getExtensionName(name) {
         if (typeof name != 'string' || name == '') {
             return ['', ''];
@@ -88,7 +89,8 @@
             extensionName = '';
         }
         return [fileName, extensionName];
-    };
+    }
+
     async function fetchJson(url, owner, repo, branch, sha, path, forceCache) {
         let actualUrl = url.replace('${owner}', owner).replace('${repo}', repo).replace('${branch}', branch).replace('${sha}', sha).replace('${path}', path);
         console.log(`fetch: ${actualUrl}`);
@@ -116,7 +118,7 @@
             size = parseFloat(aDom.getAttribute('size')),
             download = aDom.getAttribute('download'),
             filename = aDom.lastElementChild.innerText;
-        console.log(`load blob ${filename}: ${url}`);
+        console.log(`load blob ${filename}: ${url}, ${path}`);
         if (current === aId) {
             // ignore
             return;
