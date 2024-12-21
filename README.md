@@ -4,7 +4,7 @@ Git Explorer can convert any Github-compatible URL into a file explorer that can
 
 For example, the link:
 
-[https://github.com/michaelliao/git-explorer/tree/master/sample](https://github.com/michaelliao/git-explorer/tree/master/sample)
+[https://github.com/michaelliao/git-explorer/tree/main/sample](https://github.com/michaelliao/git-explorer/tree/main/sample)
 
 can be converted to:
 
@@ -25,7 +25,7 @@ See live demo on [https://michaelliao.github.io/git-explorer/](https://michaelli
     <script>
         createGitExplorer(
             document.querySelector('#placeholder'), // DOM to replace
-            'https://github.com/michaelliao/git-explorer/tree/master/sample' // GitHub-compatible URL
+            'https://github.com/michaelliao/git-explorer/tree/main/sample' // GitHub-compatible URL
         );
     </script>
 </body>
@@ -34,7 +34,7 @@ See live demo on [https://michaelliao.github.io/git-explorer/](https://michaelli
 
 ### How to change style
 
-Override [git-explorer.css](https://github.com/michaelliao/git-explorer/blob/master/css/git-explorer.css) in your own CSS.
+Override [git-explorer.css](https://github.com/michaelliao/git-explorer/blob/main/css/git-explorer.css) in your own CSS.
 
 # Notes
 
@@ -47,5 +47,5 @@ https://github.com/michaelliao/git-explorer
 Use URL with branch instead:
 
 ```
-https://github.com/michaelliao/git-explorer/tree/master
+https://github.com/michaelliao/git-explorer/tree/main
 ```
