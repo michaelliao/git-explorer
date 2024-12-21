@@ -76,7 +76,19 @@
         gitExplorerDomId++;
         return 'gitExplorer_' + gitExplorerDomId;
     }
-
+    function getExtensionName(name) {
+        if (typeof name != 'string' || name == '') {
+            return ['', ''];
+        }
+        name = name.substring(name.lastIndexOf("/") + 1);
+        let fileName = name.substring(0, name.lastIndexOf("."));
+        let extensionName =  name.substring(name.lastIndexOf(".") + 1);
+        if (fileName == '') {
+            fileName = name;
+            extensionName = '';
+        }
+        return [fileName, extensionName];
+    };
     async function fetchJson(url, owner, repo, branch, sha, path, forceCache) {
         let actualUrl = url.replace('${owner}', owner).replace('${repo}', repo).replace('${branch}', branch).replace('${sha}', sha).replace('${path}', path);
         console.log(`fetch: ${actualUrl}`);
@@ -96,7 +108,7 @@
         }).join(''));
     }
 
-    window.__loadGitBlob = function (codeId, aId, url) {
+    window.__loadGitBlob = function (codeId, aId, url, path) {
         let
             aDom = document.querySelector('#' + aId),
             codeDom = document.querySelector('#' + codeId),
@@ -121,13 +133,31 @@
         }
         codeDom.innerHTML = '<i>Loading...</i>';
         // start load blob:
-        fetchJson(url, '', '', '', '', '', true).then((obj) => {
+        fetchJson(url, '', '', '', '', path, true).then((obj) => {
             // check if url changed:
             let exp = document.querySelector('#' + codeId);
             if (exp.getAttribute('data') === aId) {
                 try {
                     codeDom.innerText = b64DecodeUnicode(obj.content);
                 } catch (err) {
+                    let fileFullName = getExtensionName(path);
+                    let fileName = fileFullName[0];
+                    let fileExtensionName = fileFullName[1];
+                    let imgList = {
+                        'gif': 'image/gif',
+                        'jpeg': 'image/jpeg',
+                        'jpg': 'image/jpeg',
+                        'webp': 'image/webp',
+                        'ico': 'image/x-icon',
+                        'bmp': 'image/x-ms-bmp',
+                        'png': 'image/png',
+                        'svg': 'image/svg+xml'
+                    };
+                    if (fileExtensionName in imgList) {
+                        let mime = imgList[fileExtensionName];
+                        codeDom.innerHTML = `<img src='data:${mime};base64,${obj.content}' />`
+                        return;
+                    }
                     // binary content:
                     codeDom.innerHTML = `<i>Cannot display binary file.</i> <a target="_blank" href="${download}">Download</a>`
                 }
@@ -280,7 +310,7 @@
             let download = downloadUrl.replace('${path}', item.path);
             return `
 <div class="git-explorer-tree-item" ${style}>
-    <a id="${aId}" size="${item.size}" path="${item.path}" download="${download}" href="javascript:void(0)" onclick="__loadGitBlob('${domId}', '${aId}', '${apiUrl}')">▤ <span>${item.name}</span></a>
+    <a id="${aId}" size="${item.size}" path="${item.path}" download="${download}" href="javascript:void(0)" onclick="__loadGitBlob('${domId}', '${aId}', '${apiUrl}', '${item.path}')">▤ <span>${item.name}</span></a>
 </div>
 `;
         } else if (item.type === 'tree') {
