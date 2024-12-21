@@ -43,7 +43,18 @@
         'v', 'vb', 'vbs',
         'xhtml', 'xml', 'xsd',
         'yml', 'yaml'];
-    let IMAGE_FILES = ['png', 'jpg', 'jpeg', 'jpe', 'gif', 'webp', 'svg'];
+
+    // image file extension -> mime type:
+    let IMAGE_FILES = {
+        '.gif': 'image/gif',
+        '.ico': 'image/x-icon',
+        '.jpeg': 'image/jpeg',
+        '.jpg': 'image/jpeg',
+        '.jpe': 'image/jpeg',
+        '.png': 'image/png',
+        '.svg': 'image/svg+xml',
+        '.webp': 'image/webp'
+    };
 
     // file name -> highlight js language name:
     let FILENAMES = {
@@ -75,20 +86,6 @@
     function nextDomId() {
         gitExplorerDomId++;
         return 'gitExplorer_' + gitExplorerDomId;
-    }
-
-    function getExtensionName(name) {
-        if (typeof name != 'string' || name == '') {
-            return ['', ''];
-        }
-        name = name.substring(name.lastIndexOf("/") + 1);
-        let fileName = name.substring(0, name.lastIndexOf("."));
-        let extensionName =  name.substring(name.lastIndexOf(".") + 1);
-        if (fileName == '') {
-            fileName = name;
-            extensionName = '';
-        }
-        return [fileName, extensionName];
     }
 
     async function fetchJson(url, owner, repo, branch, sha, path, forceCache) {
@@ -139,29 +136,20 @@
             // check if url changed:
             let exp = document.querySelector('#' + codeId);
             if (exp.getAttribute('data') === aId) {
-                try {
-                    codeDom.innerText = b64DecodeUnicode(obj.content);
-                } catch (err) {
-                    let fileFullName = getExtensionName(path);
-                    let fileName = fileFullName[0];
-                    let fileExtensionName = fileFullName[1];
-                    let imgList = {
-                        'gif': 'image/gif',
-                        'jpeg': 'image/jpeg',
-                        'jpg': 'image/jpeg',
-                        'webp': 'image/webp',
-                        'ico': 'image/x-icon',
-                        'bmp': 'image/x-ms-bmp',
-                        'png': 'image/png',
-                        'svg': 'image/svg+xml'
-                    };
-                    if (fileExtensionName in imgList) {
-                        let mime = imgList[fileExtensionName];
-                        codeDom.innerHTML = `<img src='data:${mime};base64,${obj.content}' />`
-                        return;
+                let filename = splitPath(path)[1];
+                let fileext = splitFilename(filename)[1];
+                let imgMime = IMAGE_FILES[fileext];
+                if (imgMime) {
+                    // this is an image:
+                    codeDom.innerHTML = `<img src='data:${imgMime};base64,${obj.content}' />`;
+                } else {
+                    // try as text:
+                    try {
+                        codeDom.innerText = b64DecodeUnicode(obj.content);
+                    } catch (err) {
+                        // binary content:
+                        codeDom.innerHTML = `<i>Cannot display binary file.</i> <a target="_blank" href="${download}">Download</a>`
                     }
-                    // binary content:
-                    codeDom.innerHTML = `<i>Cannot display binary file.</i> <a target="_blank" href="${download}">Download</a>`
                 }
             } else {
                 console.warn(`ignore result because selection changed: ${url}`);
@@ -203,6 +191,19 @@
     function splitPath(path) {
         let n = path.lastIndexOf('/');
         return [path.substring(0, n), path.substring(n + 1)];
+    }
+
+    /**
+     * 'hello.jpg' -> ['hello', '.jpg']
+     * '.gitignore' -> ['', '.gitignore']
+     * 'README' -> ['README', '']
+     */
+    function splitFilename(name) {
+        let n = name.lastIndexOf('.');
+        if (n >= 0) {
+            return [name.substring(0, n), name.substring(n + 1)];
+        }
+        return [name, ''];
     }
 
     function addTree(top, item) {
