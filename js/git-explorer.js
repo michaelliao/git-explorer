@@ -201,7 +201,7 @@
     function splitFilename(name) {
         let n = name.lastIndexOf('.');
         if (n >= 0) {
-            return [name.substring(0, n), name.substring(n + 1)];
+            return [name.substring(0, n), name.substring(n)];
         }
         return [name, ''];
     }
