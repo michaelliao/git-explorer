@@ -375,12 +375,20 @@
     <div class="git-explorer-frame">
         <div class="git-explorer-frame-tree">
             <div class="git-explorer-tree">
+                <div class="git-explorer-tree-tool">
+                    <i class="bi-arrows-collapse" alt="collapse folders" id="btu-collapse-folders"></i>
+                    <i class="bi-download" alt="download folders" id="btu-download-folders"></i>
+                </div>
                 ${treeItems}
             </div>
         </div>
         <div class="git-explorer-frame-resize">
         </div>
         <div class="git-explorer-frame-code">
+            <div class="git-explorer-frame-code-tool">
+                <i class="bi-copy" alt="copy" id="btu-copy-content"></i>
+                <i class="bi-file-earmark-arrow-down" alt="download file" id="btu-download-file"></i>
+            </div>
             <pre><code id="${codeId}" owner="${owner}" repo="${repo}" branch="${branch}"></code></pre>
         </div>
     </div>

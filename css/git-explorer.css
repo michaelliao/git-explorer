@@ -84,3 +84,19 @@ div.git-explorer>div.git-explorer-frame>div.git-explorer-frame-code>pre {
     overflow: scroll;
     tab-size: 4;
 }
+
+div.git-explorer>div.git-explorer-frame>div.git-explorer-frame-tree>div.git-explorer-tree>div.git-explorer-tree-tool {
+    margin: 1px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+div.git-explorer>div.git-explorer-frame>div.git-explorer-frame-code>div.git-explorer-frame-code-tool {
+    margin: 5px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+div.git-explorer>div.git-explorer-frame>div.git-explorer-frame-tree>div.git-explorer-tree>div.git-explorer-tree-tool i,
+div.git-explorer>div.git-explorer-frame>div.git-explorer-frame-code>div.git-explorer-frame-code-tool i {
+    cursor: pointer
+}
