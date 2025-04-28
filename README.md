@@ -1,6 +1,6 @@
 # Git Explorer
 
-Git Explorer can convert any Github-compatible URL into a file explorer that can be embedded into a web page.
+Git Explorer is a lightweight JavaScript library that transforms GitHub and Gitee repository URLs into interactive file explorers embedded directly within web pages.
 
 For example, the link:
 
@@ -38,13 +38,13 @@ Override [git-explorer.css](https://github.com/michaelliao/git-explorer/blob/mai
 
 # Notes
 
-The URL must contain branch info so the following URL is not work:
+The URL must contain branch info otherwise the URL like this is not work:
 
 ```
 https://github.com/michaelliao/git-explorer
 ```
 
-Use URL with branch instead:
+Always use URL with branch:
 
 ```
 https://github.com/michaelliao/git-explorer/tree/main
