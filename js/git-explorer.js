@@ -125,6 +125,10 @@
             document.querySelector('#' + current).className = '';
         }
         codeDom.setAttribute('data', aId);
+        codeDom.setAttribute('data-filename', filename);
+        codeDom.setAttribute('data-status', 'progress');
+        codeDom.setAttribute('data-download', download);
+        codeDom.setAttribute('data-istext', 0);
         aDom.className = 'git-explorer-tree-item-selected';
         if (size > MAX_SIZE) {
             codeDom.innerHTML = `<i>Cannot display large file.</i> <a target="_blank" href="${download}">Download</a>`
@@ -146,6 +150,7 @@
                     // try as text:
                     try {
                         codeDom.innerText = b64DecodeUnicode(obj.content);
+                        codeDom.setAttribute('data-istext', 1);
                     } catch (err) {
                         // binary content:
                         codeDom.innerHTML = `<i>Cannot display binary file.</i> <a target="_blank" href="${download}">Download</a>`
@@ -154,9 +159,11 @@
             } else {
                 console.warn(`ignore result because selection changed: ${url}`);
             }
+            codeDom.setAttribute('data-status', 'completed');
         }).catch((err) => {
             console.log(JSON.stringify(err))
             console.error('load content failed.', err);
+            codeDom.setAttribute('data-status', 'completed');
         });
     };
 
@@ -182,6 +189,83 @@
         }
         a.setAttribute('data', stat === '0' ? '1' : '0');
     };
+
+    function getPreDom(dom) {
+        let targetDom = $(dom.parentElement).parent().find('pre > code');
+        if (targetDom.length == 0) {
+            return null;
+        }
+        if (targetDom.data('status') != 'completed') {
+            return null;
+        }
+        return targetDom[0];
+    }
+    function getPreCodeContent(dom) {
+        let targetDom = getPreDom(dom);
+        if (!targetDom) {
+            return '';
+        }
+        return targetDom.innerText;
+    }
+    function getPreCodeFileName(dom) {
+        let targetDom = getPreDom(dom);
+        if (!targetDom) {
+            return '';
+        }
+        return targetDom.dataset.filename;
+    }
+
+
+    window.__copyContent = function(dom) {
+        let preCodeContent = getPreCodeContent(dom);
+        let fileName = getPreCodeFileName(dom);
+        if ($.trim(fileName).length == 0) {
+            return;
+        }
+        if ($.trim(preCodeContent).length == 0) {
+            return;
+        }
+
+        let type = "text/plain";
+        let blob = new Blob([preCodeContent], { type });
+        let data = [new ClipboardItem({ [type]: blob })];
+        navigator.clipboard.write(data).then(
+          () => {
+            /* success */
+          },
+          () => {
+            /* failure */
+          },
+        );
+    }
+
+    window.__downloadFile = function(dom) {
+        let targetDom = getPreDom(dom);
+        let fileName = getPreCodeFileName(dom);
+        let preCodeContent = getPreCodeContent(dom);
+        // 创建下载链接
+        let a = document.createElement('a');
+        if (targetDom.dataset.istext == 1) {
+            let type = "text/plain";
+            let blob = new Blob([preCodeContent], { type });
+            // 创建URL
+            let url = URL.createObjectURL(blob);
+            a.href = url;
+        } else {
+            download = targetDom[0].dataset.download;
+            a.setAttribute('target', '_blank');
+            a.href = download;
+        }
+        a.download = fileName;
+        a.style.width = '0px'; // 设置宽度
+        a.style.height = '0px'; // 设置高度
+        a.style.visibility = 'hidden'; // 设置为不可见
+        // 触发下载
+        document.body.appendChild(a);
+        a.click();
+        // 移除下载链接
+        setTimeout(function(){ document.body.removeChild(a); }, 500);
+    }
 
     /**
      * '/abc/xyz/hello' -> ['/abc/xyz', 'hello']
@@ -375,12 +459,20 @@
     <div class="git-explorer-frame">
         <div class="git-explorer-frame-tree">
             <div class="git-explorer-tree">
+                <div class="git-explorer-tree-tool">
+                    <i class="bi-arrows-collapse" alt="collapse folders" id="btu-collapse-folders"></i>
+                    <i class="bi-download" alt="download folders" id="btu-download-folders"></i>
+                </div>
                 ${treeItems}
             </div>
         </div>
         <div class="git-explorer-frame-resize">
         </div>
         <div class="git-explorer-frame-code">
+            <div class="git-explorer-frame-code-tool">
+                <i class="bi-copy" alt="copy" data-btu="btu-copy-content" onclick="__copyContent(this)"></i>
+                <i class="bi-file-earmark-arrow-down" alt="download file" data-btu="btu-download-file" onclick="__downloadFile(this)"></i>
+            </div>
             <pre><code id="${codeId}" owner="${owner}" repo="${repo}" branch="${branch}"></code></pre>
         </div>
     </div>
